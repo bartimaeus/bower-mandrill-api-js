@@ -370,6 +370,7 @@ class m.Messages
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
          - auto_text {Boolean} whether or not to automatically generate a text part for messages that are not given text
          - url_strip_qs {Boolean} whether or not to strip the query string from URLs when aggregating tracked URL data
+         - preserve_recipients {Boolean} whether or not to expose all recipients in to "To" header for each email
          - bcc_address {String} an optional address to receive an exact copy of each recipient's email
          - merge {Boolean} whether to evaluate merge tags in the message. Will automatically be set to true if either merge_vars or global_merge_vars are provided.
          - global_merge_vars {Array} global merge variables to use for all recipients. You can override these per recipient.
@@ -427,6 +428,7 @@ class m.Messages
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
          - auto_text {Boolean} whether or not to automatically generate a text part for messages that are not given text
          - url_strip_qs {Boolean} whether or not to strip the query string from URLs when aggregating tracked URL data
+         - preserve_recipients {Boolean} whether or not to expose all recipients in to "To" header for each email
          - bcc_address {String} an optional address to receive an exact copy of each recipient's email
          - global_merge_vars {Array} global merge variables to use for all recipients. You can override these per recipient.
              - global_merge_vars[] {Object} a single global merge variable

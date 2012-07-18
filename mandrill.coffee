@@ -508,6 +508,10 @@ class m.Messages
     Take a raw MIME document for a message, and send it exactly as if it were sent over the SMTP protocol
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} raw_message the full MIME document of an email message
+    @option params {String|null} from_email optionally define the sender address - otherwise we'll use the address found in the provided headers
+    @option params {String|null} from_name optionally define the sender alias
+    @option params {Array|null} to optionally define the recipients to receive the message - otherwise we'll use the To, Cc, and Bcc headers provided in the document
+         - to[] {String} the email address of the recipint
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -517,6 +521,9 @@ class m.Messages
             onsuccess = params
             params = {}
 
+        params["from_email"] ?= null
+        params["from_name"] ?= null
+        params["to"] ?= null
 
         @master.call('messages/send-raw', params, onsuccess, onerror)
 class m.Urls

@@ -386,16 +386,19 @@
 
     /*
         Retrieves your email rejection blacklist. You can provide an email
-    address to limit the results. Returns up to 1000 results.
+    address to limit the results. Returns up to 1000 results. By default,
+    entries that have expired are excluded from the results; set
+    include_expired to true to include them.
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} email an optional email address to search by
+        @option params {Boolean} include_expired whether to include rejections that have already expired.
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Rejects.prototype.list = function(params, onsuccess, onerror) {
-      var _ref;
+      var _ref, _ref1;
       if (params == null) {
         params = {};
       }
@@ -406,6 +409,9 @@
       }
       if ((_ref = params["email"]) == null) {
         params["email"] = null;
+      }
+      if ((_ref1 = params["include_expired"]) == null) {
+        params["include_expired"] = false;
       }
       return this.master.call('rejects/list', params, onsuccess, onerror);
     };

@@ -472,9 +472,14 @@ class m.Messages
                  - values {Array} an associated array containing the recipient's unique metadata. If a key exists in both the per-recipient metadata and the global metadata, the per-recipient metadata will be used.
          - attachments {Array} an array of supported attachments to add to the message
              - attachments[] {Object} a single supported attachment
-                 - type {String} the MIME type of the attachment - allowed types are text/*, image/*, and application/pdf
+                 - type {String} the MIME type of the attachment
                  - name {String} the file name of the attachment
                  - content {String} the content of the attachment as a base64-encoded string
+         - images {Array} an array of embedded images to add to the message
+             - images[] {Object} a single embedded image
+                 - type {String} the MIME type of the image - must start with "image/"
+                 - name {String} the Content ID of the image - use <img src="cid:THIS_VALUE"> to reference the image in your HTML content
+                 - content {String} the content of the image as a base64-encoded string
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
@@ -535,9 +540,14 @@ class m.Messages
                  - values {Array} an associated array containing the recipient's unique metadata. If a key exists in both the per-recipient metadata and the global metadata, the per-recipient metadata will be used.
          - attachments {Array} an array of supported attachments to add to the message
              - attachments[] {Object} a single supported attachment
-                 - type {String} the MIME type of the attachment - allowed types are text/*, image/*, and application/pdf
+                 - type {String} the MIME type of the attachment
                  - name {String} the file name of the attachment
                  - content {String} the content of the attachment as a base64-encoded string
+         - images {Array} an array of embedded images to add to the message
+             - images[] {Object} a single embedded image
+                 - type {String} the MIME type of the image - must start with "image/"
+                 - name {String} the Content ID of the image - use <img src="cid:THIS_VALUE"> to reference the image in your HTML content
+                 - content {String} the content of the image as a base64-encoded string
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/sendTemplate will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception

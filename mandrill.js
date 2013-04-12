@@ -99,7 +99,11 @@
         Add a new template
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} name the name for the new template - must be unique
+        @option params {String} from_email a default sending address for emails sent using this template
+        @option params {String} from_name a default from name to be used
+        @option params {String} subject a default subject line to be used
         @option params {String} code the HTML code for the template with mc:edit attributes for the editable elements
+        @option params {String} text a default text part to be used when sending with this template
         @option params {Boolean} publish set to false to add a draft template without publishing
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
@@ -107,7 +111,7 @@
 
 
     Templates.prototype.add = function(params, onsuccess, onerror) {
-      var _ref;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       if (params == null) {
         params = {};
       }
@@ -116,7 +120,22 @@
         onsuccess = params;
         params = {};
       }
-      if ((_ref = params["publish"]) == null) {
+      if ((_ref = params["from_email"]) == null) {
+        params["from_email"] = null;
+      }
+      if ((_ref1 = params["from_name"]) == null) {
+        params["from_name"] = null;
+      }
+      if ((_ref2 = params["subject"]) == null) {
+        params["subject"] = null;
+      }
+      if ((_ref3 = params["code"]) == null) {
+        params["code"] = null;
+      }
+      if ((_ref4 = params["text"]) == null) {
+        params["text"] = null;
+      }
+      if ((_ref5 = params["publish"]) == null) {
         params["publish"] = true;
       }
       return this.master.call('templates/add', params, onsuccess, onerror);
@@ -147,7 +166,11 @@
         Update the code for an existing template
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} name the immutable name of an existing template
+        @option params {String} from_email the new default sending address
+        @option params {String} from_name the new default from name
+        @option params {String} subject the new default subject line
         @option params {String} code the new code for the template
+        @option params {String} text the new default text part to be used
         @option params {Boolean} publish set to false to update the draft version of the template without publishing
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
@@ -155,7 +178,7 @@
 
 
     Templates.prototype.update = function(params, onsuccess, onerror) {
-      var _ref;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       if (params == null) {
         params = {};
       }
@@ -164,7 +187,22 @@
         onsuccess = params;
         params = {};
       }
-      if ((_ref = params["publish"]) == null) {
+      if ((_ref = params["from_email"]) == null) {
+        params["from_email"] = null;
+      }
+      if ((_ref1 = params["from_name"]) == null) {
+        params["from_name"] = null;
+      }
+      if ((_ref2 = params["subject"]) == null) {
+        params["subject"] = null;
+      }
+      if ((_ref3 = params["code"]) == null) {
+        params["code"] = null;
+      }
+      if ((_ref4 = params["text"]) == null) {
+        params["text"] = null;
+      }
+      if ((_ref5 = params["publish"]) == null) {
         params["publish"] = true;
       }
       return this.master.call('templates/update', params, onsuccess, onerror);
@@ -743,6 +781,7 @@
                  - name {String} the name of the mc:edit editable region to inject into
                  - content {String} the content to inject
         @option params {Struct} message the other information on the message to send - same as /messages/send, but without the html content
+             - html {String} optional full HTML content to be sent if not in template
              - text {String} optional full text content to be sent
              - subject {String} the message subject
              - from_email {String} the sender email address.

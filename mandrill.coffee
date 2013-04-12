@@ -326,13 +326,13 @@ class m.Inbound
 
     ###
     Take a raw MIME document destined for a domain with inbound domains set up, and send it to the inbound hook exactly as if it had been sent over SMTP
-$sparam string $to[] the email address of the recipient @validate trim
-$sparam string $mail_from the address specified in the MAIL FROM stage of the SMTP conversation @validate email. Optional; required for the SPF check.
-$sparam string $helo the identification provided by the client mta in the MTA state of the SMTP conversation. Optional; required for the SPF check.
-$sparam string $client_address the remote MTA's ip address. Optional; required for the SPF check.
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} raw_message the full MIME document of an email message
     @option params {Array|null} to optionally define the recipients to receive the message - otherwise we'll use the To, Cc, and Bcc headers provided in the document
+         - to[] {String} the email address of the recipient
+    @option params {String} mail_from the address specified in the MAIL FROM stage of the SMTP conversation. Required for the SPF check.
+    @option params {String} helo the identification provided by the client mta in the MTA state of the SMTP conversation. Required for the SPF check.
+    @option params {String} client_address the remote MTA's ip address. Optional; required for the SPF check.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -343,6 +343,9 @@ $sparam string $client_address the remote MTA's ip address. Optional; required f
             params = {}
 
         params["to"] ?= null
+        params["mail_from"] ?= null
+        params["helo"] ?= null
+        params["client_address"] ?= null
 
         @master.call('inbound/send-raw', params, onsuccess, onerror)
 class m.Tags
@@ -446,6 +449,7 @@ class m.Messages
                  - email {String} the email address of the recipient
                  - name {String} the optional display name to use for the recipient
          - headers {Object} optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
+         - important {Boolean} whether or not this message is important, and should be delivered ahead of non-important messages
          - track_opens {Boolean} whether or not to turn on open tracking for the message
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
          - auto_text {Boolean} whether or not to automatically generate a text part for messages that are not given text
@@ -519,6 +523,7 @@ class m.Messages
                  - email {String} the email address of the recipient
                  - name {String} the optional display name to use for the recipient
          - headers {Object} optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
+         - important {Boolean} whether or not this message is important, and should be delivered ahead of non-important messages
          - track_opens {Boolean} whether or not to turn on open tracking for the message
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
          - auto_text {Boolean} whether or not to automatically generate a text part for messages that are not given text
@@ -529,6 +534,7 @@ class m.Messages
          - bcc_address {String} an optional address to receive an exact copy of each recipient's email
          - tracking_domain {String} a custom domain to use for tracking opens and clicks instead of mandrillapp.com
          - signing_domain {String} a custom domain to use for SPF/DKIM signing instead of mandrill (for "via" or "on behalf of" in email clients)
+         - merge {Boolean} whether to evaluate merge tags in the message. Will automatically be set to true if either merge_vars or global_merge_vars are provided.
          - global_merge_vars {Array} global merge variables to use for all recipients. You can override these per recipient.
              - global_merge_vars[] {Object} a single global merge variable
                  - name {String} the global merge variable's name. Merge variable names are case-insensitive and may not start with _
@@ -559,7 +565,7 @@ class m.Messages
                  - type {String} the MIME type of the image - must start with "image/"
                  - name {String} the Content ID of the image - use <img src="cid:THIS_VALUE"> to reference the image in your HTML content
                  - content {String} the content of the image as a base64-encoded string
-    @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/sendTemplate will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
+    @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###

@@ -24,6 +24,7 @@
       this.inbound = new m.Inbound(this);
       this.tags = new m.Tags(this);
       this.messages = new m.Messages(this);
+      this.whitelists = new m.Whitelists(this);
       this.internal = new m.Internal(this);
       this.urls = new m.Urls(this);
       this.webhooks = new m.Webhooks(this);
@@ -423,6 +424,30 @@
     function Rejects(master) {
       this.master = master;
     }
+
+    /*
+        Adds an email to your email rejection blacklist. Addresses that you
+    add manually will never expire and there is no reputation penalty
+    for removing them from your blacklist. Attempting to blacklist an
+    address that has been whitelisted will have no effect.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} email an email address to block
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Rejects.prototype.add = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('rejects/add', params, onsuccess, onerror);
+    };
 
     /*
         Retrieves your email rejection blacklist. You can provide an email
@@ -961,6 +986,86 @@
     };
 
     return Messages;
+
+  })();
+
+  m.Whitelists = (function() {
+
+    function Whitelists(master) {
+      this.master = master;
+    }
+
+    /*
+        Adds an email to your email rejection whitelist. If the address is
+    currently on your blacklist, that blacklist entry will be removed
+    automatically.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} email an email address to add to the whitelist
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Whitelists.prototype.add = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('whitelists/add', params, onsuccess, onerror);
+    };
+
+    /*
+        Retrieves your email rejection whitelist. You can provide an email
+    address or search prefix to limit the results. Returns up to 1000 results.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} email an optional email address or prefix to search by
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Whitelists.prototype.list = function(params, onsuccess, onerror) {
+      var _ref;
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      if ((_ref = params["email"]) == null) {
+        params["email"] = null;
+      }
+      return this.master.call('whitelists/list', params, onsuccess, onerror);
+    };
+
+    /*
+        Removes an email address from the whitelist.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} email the email address to remove from the whitelist
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Whitelists.prototype["delete"] = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('whitelists/delete', params, onsuccess, onerror);
+    };
+
+    return Whitelists;
 
   })();
 

@@ -6,6 +6,7 @@ STATE_DESC = {1: 'OPENED', 2: 'HEADERS_RECEIVED', 3: 'LOADING', 4: 'DONE'}
 class m.Mandrill
     constructor: (@apikey, @debug=false) ->
         @templates = new m.Templates(this)
+        @exports = new m.Exports(this)
         @users = new m.Users(this)
         @rejects = new m.Rejects(this)
         @inbound = new m.Inbound(this)
@@ -202,6 +203,116 @@ class m.Templates
         params["merge_vars"] ?= null
 
         @master.call('templates/render', params, onsuccess, onerror)
+class m.Exports
+    constructor: (@master) ->
+
+
+    ###
+    Returns information about an export job. If the export job's state is 'complete',
+the returned data will include a URL you can use to fetch the results. Every export
+job produces a zip archive, but the format of the archive is distinct for each job
+type. The api calls that initiate exports include more details about the output format
+for that job type.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id an export job identifier
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    info: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('exports/info', params, onsuccess, onerror)
+
+    ###
+    Returns a list of your exports.
+    @param {Object} params the hash of the parameters to pass to the request
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    list: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('exports/list', params, onsuccess, onerror)
+
+    ###
+    Begins an export of your rejection blacklist. The blacklist will be exported to a zip archive
+containing a single file named rejects.csv that includes the following fields: email,
+reason, detail, created_at, expires_at, last_event_at, expires_at.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} notify_email an optional email address to notify when the export job has finished.
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    rejects: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["notify_email"] ?= null
+
+        @master.call('exports/rejects', params, onsuccess, onerror)
+
+    ###
+    Begins an export of your rejection whitelist. The whitelist will be exported to a zip archive
+containing a single file named whitelist.csv that includes the following fields:
+email, detail, created_at.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} notify_email an optional email address to notify when the export job has finished.
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    whitelist: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["notify_email"] ?= null
+
+        @master.call('exports/whitelist', params, onsuccess, onerror)
+
+    ###
+    Begins an export of your activity history. The activity will be exported to a zaip archive
+containing a single file named activity.csv in the same format as you would be able to export
+from your account's activity view. It includes the following fields: Date, Email Address,
+Sender, Subject, Status, Tags, Opens, Clicks, Bounce Detail. If you have configured any custom
+metadata fields, they will be included in the exported data.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} notify_email an optional email address to notify when the export job has finished
+    @option params {String} date_from start date as a UTC string in YYYY-MM-DD HH:MM:SS format
+    @option params {String} date_to end date as a UTC string in YYYY-MM-DD HH:MM:SS format
+    @option params {Array} tags an array of tag names to narrow the export to; will match messages that contain ANY of the tags
+         - tags[] {String} a tag name
+    @option params {Array} senders an array of senders to narrow the export to
+         - senders[] {String} a sender address
+    @option params {Array} states an array of states to narrow the export to; messages with ANY of the states will be included
+         - states[] {String} a message state
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    activity: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["notify_email"] ?= null
+        params["date_from"] ?= null
+        params["date_to"] ?= null
+        params["tags"] ?= null
+        params["senders"] ?= null
+        params["states"] ?= null
+
+        @master.call('exports/activity', params, onsuccess, onerror)
 class m.Users
     constructor: (@master) ->
 

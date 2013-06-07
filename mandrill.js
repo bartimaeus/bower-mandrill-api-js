@@ -938,13 +938,14 @@
                      - name {String} the Content ID of the image - use <img src="cid:THIS_VALUE"> to reference the image in your HTML content
                      - content {String} the content of the image as a base64-encoded string
         @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
+        @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Messages.prototype.send = function(params, onsuccess, onerror) {
-      var _ref;
+      var _ref, _ref1;
       if (params == null) {
         params = {};
       }
@@ -955,6 +956,9 @@
       }
       if ((_ref = params["async"]) == null) {
         params["async"] = false;
+      }
+      if ((_ref1 = params["ip_pool"]) == null) {
+        params["ip_pool"] = null;
       }
       return this.master.call('messages/send', params, onsuccess, onerror);
     };
@@ -1021,13 +1025,14 @@
                      - name {String} the Content ID of the image - use <img src="cid:THIS_VALUE"> to reference the image in your HTML content
                      - content {String} the content of the image as a base64-encoded string
         @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
+        @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Messages.prototype.sendTemplate = function(params, onsuccess, onerror) {
-      var _ref;
+      var _ref, _ref1;
       if (params == null) {
         params = {};
       }
@@ -1038,6 +1043,9 @@
       }
       if ((_ref = params["async"]) == null) {
         params["async"] = false;
+      }
+      if ((_ref1 = params["ip_pool"]) == null) {
+        params["ip_pool"] = null;
       }
       return this.master.call('messages/send-template', params, onsuccess, onerror);
     };
@@ -1117,13 +1125,14 @@
         @option params {Array|null} to optionally define the recipients to receive the message - otherwise we'll use the To, Cc, and Bcc headers provided in the document
              - to[] {String} the email address of the recipint
         @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/sendRaw will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
+        @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Messages.prototype.sendRaw = function(params, onsuccess, onerror) {
-      var _ref, _ref1, _ref2, _ref3;
+      var _ref, _ref1, _ref2, _ref3, _ref4;
       if (params == null) {
         params = {};
       }
@@ -1143,6 +1152,9 @@
       }
       if ((_ref3 = params["async"]) == null) {
         params["async"] = false;
+      }
+      if ((_ref4 = params["ip_pool"]) == null) {
+        params["ip_pool"] = null;
       }
       return this.master.call('messages/send-raw', params, onsuccess, onerror);
     };

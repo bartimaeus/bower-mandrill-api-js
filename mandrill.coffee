@@ -642,6 +642,7 @@ class m.Messages
                  - content {String} the content of the image as a base64-encoded string
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
+    @option params {String} send_at when this message should be sent as a UTC timestamp in YYYY-MM-DD HH:MM:SS format. If you specify a time in the past, the message will be sent immediately.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -653,6 +654,7 @@ class m.Messages
 
         params["async"] ?= false
         params["ip_pool"] ?= null
+        params["send_at"] ?= null
 
         @master.call('messages/send', params, onsuccess, onerror)
 
@@ -719,6 +721,7 @@ class m.Messages
                  - content {String} the content of the image as a base64-encoded string
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/send will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
+    @option params {String} send_at when this message should be sent as a UTC timestamp in YYYY-MM-DD HH:MM:SS format. If you specify a time in the past, the message will be sent immediately.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -730,6 +733,7 @@ class m.Messages
 
         params["async"] ?= false
         params["ip_pool"] ?= null
+        params["send_at"] ?= null
 
         @master.call('messages/send-template', params, onsuccess, onerror)
 
@@ -786,6 +790,7 @@ class m.Messages
          - to[] {String} the email address of the recipint
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/sendRaw will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
+    @option params {String} send_at when this message should be sent as a UTC timestamp in YYYY-MM-DD HH:MM:SS format. If you specify a time in the past, the message will be sent immediately.
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -800,8 +805,59 @@ class m.Messages
         params["to"] ?= null
         params["async"] ?= false
         params["ip_pool"] ?= null
+        params["send_at"] ?= null
 
         @master.call('messages/send-raw', params, onsuccess, onerror)
+
+    ###
+    Queries your scheduled emails by sender or recipient, or both.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} to an optional recipient address to restrict results to
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    listScheduled: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["to"] ?= null
+
+        @master.call('messages/list-scheduled', params, onsuccess, onerror)
+
+    ###
+    Cancels a scheduled email.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id a scheduled email id, as returned by any of the messages/send calls or messages/list-scheduled
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    cancelScheduled: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('messages/cancel-scheduled', params, onsuccess, onerror)
+
+    ###
+    Reschedules a scheduled email.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id a scheduled email id, as returned by any of the messages/send calls or messages/list-scheduled
+    @option params {String} send_at the new UTC timestamp when the message should sent. Mandrill can't time travel, so if you specify a time in past the message will be sent immediately
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    reschedule: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('messages/reschedule', params, onsuccess, onerror)
 class m.Whitelists
     constructor: (@master) ->
 

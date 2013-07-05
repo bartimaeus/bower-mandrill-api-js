@@ -765,6 +765,22 @@ class m.Messages
         @master.call('messages/search', params, onsuccess, onerror)
 
     ###
+    Get the information for a single recently sent message
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique id of the message to get - passed as the "_id" field in webhooks, send calls, or search calls
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    info: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('messages/info', params, onsuccess, onerror)
+
+    ###
     Parse the full MIME document for an email message, returning the content of the message broken into its constituent pieces
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} raw_message the full MIME document of an email message

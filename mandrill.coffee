@@ -597,7 +597,7 @@ class m.Messages
              - to[] {Object} a single recipient's information.
                  - email {String} the email address of the recipient
                  - name {String} the optional display name to use for the recipient
-         - headers {Object} optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
+         - headers {Object} optional extra headers to add to the message (most headers are allowed)
          - important {Boolean} whether or not this message is important, and should be delivered ahead of non-important messages
          - track_opens {Boolean} whether or not to turn on open tracking for the message
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
@@ -676,7 +676,7 @@ class m.Messages
              - to[] {Object} a single recipient's information.
                  - email {String} the email address of the recipient
                  - name {String} the optional display name to use for the recipient
-         - headers {Object} optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
+         - headers {Object} optional extra headers to add to the message (most headers are allowed)
          - important {Boolean} whether or not this message is important, and should be delivered ahead of non-important messages
          - track_opens {Boolean} whether or not to turn on open tracking for the message
          - track_clicks {Boolean} whether or not to turn on click tracking for the message
@@ -765,6 +765,31 @@ class m.Messages
         @master.call('messages/search', params, onsuccess, onerror)
 
     ###
+    Search the content of recently sent messages and return the aggregated hourly stats for matching messages
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} query the search terms to find matching messages for
+    @option params {String} date_from start date
+    @option params {String} date_to end date
+    @option params {Array} tags an array of tag names to narrow the search to, will return messages that contain ANY of the tags
+    @option params {Array} senders an array of sender addresses to narrow the search to, will return messages sent by ANY of the senders
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    searchTimeSeries: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["query"] ?= '*'
+        params["date_from"] ?= null
+        params["date_to"] ?= null
+        params["tags"] ?= null
+        params["senders"] ?= null
+
+        @master.call('messages/search-time-series', params, onsuccess, onerror)
+
+    ###
     Get the information for a single recently sent message
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} id the unique id of the message to get - passed as the "_id" field in webhooks, send calls, or search calls
@@ -803,7 +828,7 @@ class m.Messages
     @option params {String|null} from_email optionally define the sender address - otherwise we'll use the address found in the provided headers
     @option params {String|null} from_name optionally define the sender alias
     @option params {Array|null} to optionally define the recipients to receive the message - otherwise we'll use the To, Cc, and Bcc headers provided in the document
-         - to[] {String} the email address of the recipint
+         - to[] {String} the email address of the recipient
     @option params {Boolean} async enable a background sending mode that is optimized for bulk sending. In async mode, messages/sendRaw will immediately return a status of "queued" for every recipient. To handle rejections when sending in async mode, set up a webhook for the 'reject' event. Defaults to false for messages with no more than 10 recipients; messages with more than 10 recipients are always sent asynchronously, regardless of the value of async.
     @option params {String} ip_pool the name of the dedicated ip pool that should be used to send the message. If you do not have any dedicated IPs, this parameter has no effect. If you specify a pool that does not exist, your default pool will be used instead.
     @option params {String} send_at when this message should be sent as a UTC timestamp in YYYY-MM-DD HH:MM:SS format. If you specify a time in the past, the message will be sent immediately.

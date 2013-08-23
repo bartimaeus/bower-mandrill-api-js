@@ -14,6 +14,7 @@ class m.Mandrill
         @messages = new m.Messages(this)
         @whitelists = new m.Whitelists(this)
         @internal = new m.Internal(this)
+        @subaccounts = new m.Subaccounts(this)
         @urls = new m.Urls(this)
         @webhooks = new m.Webhooks(this)
         @senders = new m.Senders(this)
@@ -624,6 +625,7 @@ class m.Messages
                          - content {String} the merge variable's content
          - tags {Array} an array of string to tag the message with.  Stats are accumulated using tags, though we only store the first 100 we see, so this should not be unique or change frequently.  Tags should be 50 characters or less.  Any tags starting with an underscore are reserved for internal use and will cause errors.
              - tags[] {String} a single tag - must not start with an underscore
+         - subaccount {String} the unique id of a subaccount for this message - must already exist or will fail with an error
          - google_analytics_domains {Array} an array of strings indicating for which any matching URLs will automatically have Google Analytics parameters appended to their query string automatically.
          - google_analytics_campaign {Array|string} optional string indicating the value to set for the utm_campaign tracking parameter. If this isn't provided the email's from address will be used instead.
          - metadata {Array} metadata an associative array of user metadata. Mandrill will store this metadata and make it available for retrieval. In addition, you can select up to 10 metadata fields to index and make searchable using the Mandrill search api.
@@ -704,6 +706,7 @@ class m.Messages
                          - content {String} the merge variable's content
          - tags {Array} an array of string to tag the message with.  Stats are accumulated using tags, though we only store the first 100 we see, so this should not be unique or change frequently.  Tags should be 50 characters or less.  Any tags starting with an underscore are reserved for internal use and will cause errors.
              - tags[] {String} a single tag - must not start with an underscore
+         - subaccount {String} the unique id of a subaccount for this message - must already exist or will fail with an error
          - google_analytics_domains {Array} an array of strings indicating for which any matching URLs will automatically have Google Analytics parameters appended to their query string automatically.
          - google_analytics_campaign {Array|string} optional string indicating the value to set for the utm_campaign tracking parameter. If this isn't provided the email's from address will be used instead.
          - metadata {Array} metadata an associative array of user metadata. Mandrill will store this metadata and make it available for retrieval. In addition, you can select up to 10 metadata fields to index and make searchable using the Mandrill search api.
@@ -961,6 +964,134 @@ address or search prefix to limit the results. Returns up to 1000 results.
 class m.Internal
     constructor: (@master) ->
 
+class m.Subaccounts
+    constructor: (@master) ->
+
+
+    ###
+    Get the list of subaccounts defined for the account, optionally filtered by a prefix
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} q an optional prefix to filter the subaccounts' ids and names
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    list: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["q"] ?= null
+
+        @master.call('subaccounts/list', params, onsuccess, onerror)
+
+    ###
+    Add a new subaccount
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id a unique identifier for the subaccount to be used in sending calls
+    @option params {String} name an optional display name to further identify the subaccount
+    @option params {String} notes optional extra text to associate with the subaccount
+    @option params {Integer} custom_quota an optional manual hourly quota for the subaccount. If not specified, Mandrill will manage this based on reputation
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    add: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["name"] ?= null
+        params["notes"] ?= null
+        params["custom_quota"] ?= null
+
+        @master.call('subaccounts/add', params, onsuccess, onerror)
+
+    ###
+    Given the ID of an existing subaccount, return the data about it
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of the subaccount to query
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    info: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('subaccounts/info', params, onsuccess, onerror)
+
+    ###
+    Update an existing subaccount
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of the subaccount to update
+    @option params {String} name an optional display name to further identify the subaccount
+    @option params {String} notes optional extra text to associate with the subaccount
+    @option params {Integer} custom_quota an optional manual hourly quota for the subaccount. If not specified, Mandrill will manage this based on reputation
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    update: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["name"] ?= null
+        params["notes"] ?= null
+        params["custom_quota"] ?= null
+
+        @master.call('subaccounts/update', params, onsuccess, onerror)
+
+    ###
+    Delete an existing subaccount. Any email related to the subaccount will be saved, but stats will be removed and any future sending calls to this subaccount will fail.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of the subaccount to delete
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    delete: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('subaccounts/delete', params, onsuccess, onerror)
+
+    ###
+    Pause a subaccount's sending. Any future emails delivered to this subaccount will be queued for a maximum of 3 days until the subaccount is resumed.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of the subaccount to pause
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    pause: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('subaccounts/pause', params, onsuccess, onerror)
+
+    ###
+    Resume a paused subaccount's sending
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of the subaccount to resume
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    resume: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('subaccounts/resume', params, onsuccess, onerror)
 class m.Urls
     constructor: (@master) ->
 

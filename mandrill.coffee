@@ -297,6 +297,8 @@ metadata fields, they will be included in the exported data.
          - senders[] {String} a sender address
     @option params {Array} states an array of states to narrow the export to; messages with ANY of the states will be included
          - states[] {String} a message state
+    @option params {Array} api_keys an array of api keys to narrow the export to; messsagse sent with ANY of the keys will be included
+         - api_keys[] {String} an API key associated with your account
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -312,6 +314,7 @@ metadata fields, they will be included in the exported data.
         params["tags"] ?= null
         params["senders"] ?= null
         params["states"] ?= null
+        params["api_keys"] ?= null
 
         @master.call('exports/activity', params, onsuccess, onerror)
 class m.Users
@@ -607,6 +610,7 @@ class m.Messages
          - inline_css {Boolean} whether or not to automatically inline all CSS styles provided in the message HTML - only for HTML documents less than 256KB in size
          - url_strip_qs {Boolean} whether or not to strip the query string from URLs when aggregating tracked URL data
          - preserve_recipients {Boolean} whether or not to expose all recipients in to "To" header for each email
+         - view_content_link {Boolean} set to false to remove content logging for sensitive emails
          - bcc_address {String} an optional address to receive an exact copy of each recipient's email
          - tracking_domain {String} a custom domain to use for tracking opens and clicks instead of mandrillapp.com
          - signing_domain {String} a custom domain to use for SPF/DKIM signing instead of mandrill (for "via" or "on behalf of" in email clients)
@@ -688,6 +692,7 @@ class m.Messages
          - inline_css {Boolean} whether or not to automatically inline all CSS styles provided in the message HTML - only for HTML documents less than 256KB in size
          - url_strip_qs {Boolean} whether or not to strip the query string from URLs when aggregating tracked URL data
          - preserve_recipients {Boolean} whether or not to expose all recipients in to "To" header for each email
+         - view_content_link {Boolean} set to false to remove content logging for sensitive emails
          - bcc_address {String} an optional address to receive an exact copy of each recipient's email
          - tracking_domain {String} a custom domain to use for tracking opens and clicks instead of mandrillapp.com
          - signing_domain {String} a custom domain to use for SPF/DKIM signing instead of mandrill (for "via" or "on behalf of" in email clients)
@@ -750,6 +755,7 @@ class m.Messages
     @option params {String} date_to end date
     @option params {Array} tags an array of tag names to narrow the search to, will return messages that contain ANY of the tags
     @option params {Array} senders an array of sender addresses to narrow the search to, will return messages sent by ANY of the senders
+    @option params {Array} api_keys an array of API keys to narrow the search to, will return messages sent by ANY of the keys
     @option params {Integer} limit the maximum number of results to return, defaults to 100, 1000 is the maximum
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
@@ -765,6 +771,7 @@ class m.Messages
         params["date_to"] ?= null
         params["tags"] ?= null
         params["senders"] ?= null
+        params["api_keys"] ?= null
         params["limit"] ?= 100
 
         @master.call('messages/search', params, onsuccess, onerror)
@@ -827,7 +834,7 @@ class m.Messages
         @master.call('messages/parse', params, onsuccess, onerror)
 
     ###
-    Take a raw MIME document for a message, and send it exactly as if it were sent over the SMTP protocol
+    Take a raw MIME document for a message, and send it exactly as if it were sent through Mandrill's SMTP servers
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} raw_message the full MIME document of an email message
     @option params {String|null} from_email optionally define the sender address - otherwise we'll use the address found in the provided headers
@@ -1268,6 +1275,61 @@ class m.Senders
 
 
         @master.call('senders/domains', params, onsuccess, onerror)
+
+    ###
+    Adds a sender domain to your account. Sender domains are added automatically as you
+send, but you can use this call to add them ahead of time.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain a domain name
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    addDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('senders/add-domain', params, onsuccess, onerror)
+
+    ###
+    Checks the SPF and DKIM settings for a domain. If you haven't already added this domain to your
+account, it will be added automatically.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain a domain name
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    checkDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('senders/check-domain', params, onsuccess, onerror)
+
+    ###
+    Sends a verification email in order to verify ownership of a domain.
+Domain verification is an optional step to confirm ownership of a domain. Once a
+domain has been verified in a Mandrill account, other accounts may not have their
+messages signed by that domain unless they also verify the domain. This prevents
+other Mandrill accounts from sending mail signed by your domain.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain a domain name at which you can receive email
+    @option params {String} mailbox a mailbox at the domain where the verification email should be sent
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    verifyDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('senders/verify-domain', params, onsuccess, onerror)
 
     ###
     Return more detailed information about a single sender, including aggregates of recent stats

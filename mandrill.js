@@ -601,12 +601,15 @@
     address that has been whitelisted will have no effect.
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} email an email address to block
+        @option params {String} comment an optional comment describing the rejection
+        @option params {String} subaccount an optional unique identifier for the subaccount to limit the blacklist entry
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Rejects.prototype.add = function(params, onsuccess, onerror) {
+      var _ref, _ref1;
       if (params == null) {
         params = {};
       }
@@ -614,6 +617,12 @@
         onerror = onsuccess;
         onsuccess = params;
         params = {};
+      }
+      if ((_ref = params["comment"]) == null) {
+        params["comment"] = null;
+      }
+      if ((_ref1 = params["subaccount"]) == null) {
+        params["subaccount"] = null;
       }
       return this.master.call('rejects/add', params, onsuccess, onerror);
     };
@@ -626,13 +635,14 @@
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} email an optional email address to search by
         @option params {Boolean} include_expired whether to include rejections that have already expired.
+        @option params {String} subaccount an optional unique identifier for the subaccount to limit the blacklist
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Rejects.prototype.list = function(params, onsuccess, onerror) {
-      var _ref, _ref1;
+      var _ref, _ref1, _ref2;
       if (params == null) {
         params = {};
       }
@@ -647,6 +657,9 @@
       if ((_ref1 = params["include_expired"]) == null) {
         params["include_expired"] = false;
       }
+      if ((_ref2 = params["subaccount"]) == null) {
+        params["subaccount"] = null;
+      }
       return this.master.call('rejects/list', params, onsuccess, onerror);
     };
 
@@ -656,12 +669,14 @@
     has an affect on your reputation.
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} email an email address
+        @option params {String} subaccount an optional unique identifier for the subaccount to limit the blacklist deletion
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Rejects.prototype["delete"] = function(params, onsuccess, onerror) {
+      var _ref;
       if (params == null) {
         params = {};
       }
@@ -669,6 +684,9 @@
         onerror = onsuccess;
         onsuccess = params;
         params = {};
+      }
+      if ((_ref = params["subaccount"]) == null) {
+        params["subaccount"] = null;
       }
       return this.master.call('rejects/delete', params, onsuccess, onerror);
     };

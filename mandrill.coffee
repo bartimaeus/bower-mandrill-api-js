@@ -56,6 +56,8 @@ class m.Templates
     @option params {String} code the HTML code for the template with mc:edit attributes for the editable elements
     @option params {String} text a default text part to be used when sending with this template
     @option params {Boolean} publish set to false to add a draft template without publishing
+    @option params {Array} labels an optional array of up to 10 labels to use for filtering templates
+         - labels[] {String} a single label
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -71,6 +73,7 @@ class m.Templates
         params["code"] ?= null
         params["text"] ?= null
         params["publish"] ?= true
+        params["labels"] ?= []
 
         @master.call('templates/add', params, onsuccess, onerror)
 
@@ -100,6 +103,8 @@ class m.Templates
     @option params {String} code the new code for the template
     @option params {String} text the new default text part to be used
     @option params {Boolean} publish set to false to update the draft version of the template without publishing
+    @option params {Array} labels an optional array of up to 10 labels to use for filtering templates
+         - labels[] {String} a single label
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -115,6 +120,7 @@ class m.Templates
         params["code"] ?= null
         params["text"] ?= null
         params["publish"] ?= true
+        params["labels"] ?= null
 
         @master.call('templates/update', params, onsuccess, onerror)
 
@@ -153,6 +159,7 @@ class m.Templates
     ###
     Return a list of all the templates available to this user
     @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} label an optional label to filter the templates
     @param {Function} onsuccess an optional callback to execute when the API call is successfully made
     @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     ###
@@ -162,6 +169,7 @@ class m.Templates
             onsuccess = params
             params = {}
 
+        params["label"] ?= null
 
         @master.call('templates/list', params, onsuccess, onerror)
 
@@ -471,6 +479,54 @@ class m.Inbound
         @master.call('inbound/domains', params, onsuccess, onerror)
 
     ###
+    Add an inbound domain to your account
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain a domain name
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    addDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('inbound/add-domain', params, onsuccess, onerror)
+
+    ###
+    Check the MX settings for an inbound domain. The domain must have already been added with the add-domain call
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain an existing inbound domain
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    checkDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('inbound/check-domain', params, onsuccess, onerror)
+
+    ###
+    Delete an inbound domain from the account. All mail will stop routing for this domain immediately.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain an existing inbound domain
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    deleteDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('inbound/delete-domain', params, onsuccess, onerror)
+
+    ###
     List the mailbox routes defined for an inbound domain
     @param {Object} params the hash of the parameters to pass to the request
     @option params {String} domain the domain to check
@@ -485,6 +541,60 @@ class m.Inbound
 
 
         @master.call('inbound/routes', params, onsuccess, onerror)
+
+    ###
+    Add a new mailbox route to an inbound domain
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain an existing inbound domain
+    @option params {String} pattern the search pattern that the mailbox name should match
+    @option params {String} url the webhook URL where the inbound messages will be published
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    addRoute: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('inbound/add-route', params, onsuccess, onerror)
+
+    ###
+    Update the pattern or webhook of an existing inbound mailbox route. If null is provided for any fields, the values will remain unchanged.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of an existing mailbox route
+    @option params {String} pattern the search pattern that the mailbox name should match
+    @option params {String} url the webhook URL where the inbound messages will be published
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    updateRoute: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["pattern"] ?= null
+        params["url"] ?= null
+
+        @master.call('inbound/update-route', params, onsuccess, onerror)
+
+    ###
+    Delete an existing inbound mailbox route
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} id the unique identifier of an existing route
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    deleteRoute: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('inbound/delete-route', params, onsuccess, onerror)
 
     ###
     Take a raw MIME document destined for a domain with inbound domains set up, and send it to the inbound hook exactly as if it had been sent over SMTP
@@ -1382,6 +1492,53 @@ class m.Urls
 
 
         @master.call('urls/time-series', params, onsuccess, onerror)
+
+    ###
+    Get the list of tracking domains set up for this account
+    @param {Object} params the hash of the parameters to pass to the request
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    trackingDomains: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('urls/tracking-domains', params, onsuccess, onerror)
+
+    ###
+    Add a tracking domain to your account
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain a domain name
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    addTrackingDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('urls/add-tracking-domain', params, onsuccess, onerror)
+
+    ###
+    Checks the CNAME settings for a tracking domain. The domain must have been added already with the add-tracking-domain call
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} domain an existing tracking domain name
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    checkTrackingDomain: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('urls/check-tracking-domain', params, onsuccess, onerror)
 class m.Webhooks
     constructor: (@master) ->
 

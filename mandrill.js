@@ -109,13 +109,15 @@
         @option params {String} code the HTML code for the template with mc:edit attributes for the editable elements
         @option params {String} text a default text part to be used when sending with this template
         @option params {Boolean} publish set to false to add a draft template without publishing
+        @option params {Array} labels an optional array of up to 10 labels to use for filtering templates
+             - labels[] {String} a single label
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Templates.prototype.add = function(params, onsuccess, onerror) {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (params == null) {
         params = {};
       }
@@ -141,6 +143,9 @@
       }
       if ((_ref5 = params["publish"]) == null) {
         params["publish"] = true;
+      }
+      if ((_ref6 = params["labels"]) == null) {
+        params["labels"] = [];
       }
       return this.master.call('templates/add', params, onsuccess, onerror);
     };
@@ -176,13 +181,15 @@
         @option params {String} code the new code for the template
         @option params {String} text the new default text part to be used
         @option params {Boolean} publish set to false to update the draft version of the template without publishing
+        @option params {Array} labels an optional array of up to 10 labels to use for filtering templates
+             - labels[] {String} a single label
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Templates.prototype.update = function(params, onsuccess, onerror) {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (params == null) {
         params = {};
       }
@@ -208,6 +215,9 @@
       }
       if ((_ref5 = params["publish"]) == null) {
         params["publish"] = true;
+      }
+      if ((_ref6 = params["labels"]) == null) {
+        params["labels"] = null;
       }
       return this.master.call('templates/update', params, onsuccess, onerror);
     };
@@ -257,12 +267,14 @@
     /*
         Return a list of all the templates available to this user
         @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} label an optional label to filter the templates
         @param {Function} onsuccess an optional callback to execute when the API call is successfully made
         @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
     */
 
 
     Templates.prototype.list = function(params, onsuccess, onerror) {
+      var _ref;
       if (params == null) {
         params = {};
       }
@@ -270,6 +282,9 @@
         onerror = onsuccess;
         onsuccess = params;
         params = {};
+      }
+      if ((_ref = params["label"]) == null) {
+        params["label"] = null;
       }
       return this.master.call('templates/list', params, onsuccess, onerror);
     };
@@ -722,6 +737,69 @@
     };
 
     /*
+        Add an inbound domain to your account
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain a domain name
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.addDomain = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('inbound/add-domain', params, onsuccess, onerror);
+    };
+
+    /*
+        Check the MX settings for an inbound domain. The domain must have already been added with the add-domain call
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain an existing inbound domain
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.checkDomain = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('inbound/check-domain', params, onsuccess, onerror);
+    };
+
+    /*
+        Delete an inbound domain from the account. All mail will stop routing for this domain immediately.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain an existing inbound domain
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.deleteDomain = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('inbound/delete-domain', params, onsuccess, onerror);
+    };
+
+    /*
         List the mailbox routes defined for an inbound domain
         @param {Object} params the hash of the parameters to pass to the request
         @option params {String} domain the domain to check
@@ -740,6 +818,80 @@
         params = {};
       }
       return this.master.call('inbound/routes', params, onsuccess, onerror);
+    };
+
+    /*
+        Add a new mailbox route to an inbound domain
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain an existing inbound domain
+        @option params {String} pattern the search pattern that the mailbox name should match
+        @option params {String} url the webhook URL where the inbound messages will be published
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.addRoute = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('inbound/add-route', params, onsuccess, onerror);
+    };
+
+    /*
+        Update the pattern or webhook of an existing inbound mailbox route. If null is provided for any fields, the values will remain unchanged.
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} id the unique identifier of an existing mailbox route
+        @option params {String} pattern the search pattern that the mailbox name should match
+        @option params {String} url the webhook URL where the inbound messages will be published
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.updateRoute = function(params, onsuccess, onerror) {
+      var _ref, _ref1;
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      if ((_ref = params["pattern"]) == null) {
+        params["pattern"] = null;
+      }
+      if ((_ref1 = params["url"]) == null) {
+        params["url"] = null;
+      }
+      return this.master.call('inbound/update-route', params, onsuccess, onerror);
+    };
+
+    /*
+        Delete an existing inbound mailbox route
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} id the unique identifier of an existing route
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Inbound.prototype.deleteRoute = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('inbound/delete-route', params, onsuccess, onerror);
     };
 
     /*
@@ -1991,6 +2143,68 @@
         params = {};
       }
       return this.master.call('urls/time-series', params, onsuccess, onerror);
+    };
+
+    /*
+        Get the list of tracking domains set up for this account
+        @param {Object} params the hash of the parameters to pass to the request
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Urls.prototype.trackingDomains = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('urls/tracking-domains', params, onsuccess, onerror);
+    };
+
+    /*
+        Add a tracking domain to your account
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain a domain name
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Urls.prototype.addTrackingDomain = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('urls/add-tracking-domain', params, onsuccess, onerror);
+    };
+
+    /*
+        Checks the CNAME settings for a tracking domain. The domain must have been added already with the add-tracking-domain call
+        @param {Object} params the hash of the parameters to pass to the request
+        @option params {String} domain an existing tracking domain name
+        @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+        @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    */
+
+
+    Urls.prototype.checkTrackingDomain = function(params, onsuccess, onerror) {
+      if (params == null) {
+        params = {};
+      }
+      if (typeof params === 'function') {
+        onerror = onsuccess;
+        onsuccess = params;
+        params = {};
+      }
+      return this.master.call('urls/check-tracking-domain', params, onsuccess, onerror);
     };
 
     return Urls;

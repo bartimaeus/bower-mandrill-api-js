@@ -19,6 +19,7 @@ class m.Mandrill
         @urls = new m.Urls(this)
         @webhooks = new m.Webhooks(this)
         @senders = new m.Senders(this)
+        @metadata = new m.Metadata(this)
 
     call: (uri, params={}, onresult, onerror) ->
         params.key = @apikey
@@ -1770,6 +1771,75 @@ other Mandrill accounts from sending mail signed by your domain.
 
 
         @master.call('senders/time-series', params, onsuccess, onerror)
+class m.Metadata
+    constructor: (@master) ->
+
+
+    ###
+    Get the list of custom metadata fields indexed for the account.
+    @param {Object} params the hash of the parameters to pass to the request
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    list: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('metadata/list', params, onsuccess, onerror)
+
+    ###
+    Add a new custom metadata field to be indexed for the account.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} name a unique identifier for the metadata field
+    @option params {String} view_template optional Mustache template to control how the metadata is rendered in your activity log
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    add: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+        params["view_template"] ?= null
+
+        @master.call('metadata/add', params, onsuccess, onerror)
+
+    ###
+    Update an existing custom metadata field.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} name the unique identifier of the metadata field to update
+    @option params {String} view_template optional Mustache template to control how the metadata is rendered in your activity log
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    update: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('metadata/update', params, onsuccess, onerror)
+
+    ###
+    Delete an existing custom metadata field. Deletion isn't instataneous, and /metadata/list will continue to return the field until the asynchronous deletion process is complete.
+    @param {Object} params the hash of the parameters to pass to the request
+    @option params {String} name the unique identifier of the metadata field to update
+    @param {Function} onsuccess an optional callback to execute when the API call is successfully made
+    @param {Function} onerror an optional callback to execute when the API call errors out - defaults to throwing the error as an exception
+    ###
+    delete: (params={}, onsuccess, onerror) ->
+        if typeof params == 'function'
+            onerror = onsuccess
+            onsuccess = params
+            params = {}
+
+
+        @master.call('metadata/delete', params, onsuccess, onerror)
 
 (exports ? this).mandrill = m
 

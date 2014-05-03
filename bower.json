@@ -1,0 +1,17 @@
+{
+  "name": "MandrillAPI",
+  "description": "Mailchimp's official Mandrill JavaScript API",
+  "version": "1.0.38",
+  "keywords": [
+    "mailchimp",
+    "mandrill"
+  ],
+  "homepage": "https://bitbucket.org/mailchimp/mandrill-api-js",
+  "main": [
+    "mandrill.js",
+    "mandrill.min.js"
+  ],
+  "dependencies": [
+    "json2": "git://github.com/douglascrockford/JSON-js.git"
+  ]
+}
